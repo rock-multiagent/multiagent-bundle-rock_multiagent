@@ -1,0 +1,19 @@
+<package>
+  <description brief="Bundle to setup a distributed communication infrastructure for multiagents">
+  This bundle allows to easily setup a distributed communication infrastructure for multiagents, using a FIPA-based approach.
+  </description>
+  <author>Thomas Roehr/thomas.roehr@dfki.de</author>
+  <license></license>
+  <url>http://https://github.com/rock-multiagent/multiagent-bundle-multiagent.git</url>
+  <logo>http://</logo>
+
+  <depend package="bundles/rock" />
+  <!--
+   To add any dependencies use the depend tag
+  <depend package="dummy-dependency-0" />
+	...
+  <depend package="dummy-dependency-n-1" />
+  <depend package="dummy-dependency-n" />
+  -->
+  <depend package="multiagent/orogen/fipa_services" />
+</package>
