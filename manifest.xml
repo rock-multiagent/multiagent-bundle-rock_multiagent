@@ -4,16 +4,7 @@
   </description>
   <author>Thomas Roehr/thomas.roehr@dfki.de</author>
   <license></license>
-  <url>http://https://github.com/rock-multiagent/multiagent-bundle-multiagent.git</url>
-  <logo>http://</logo>
-
+  <url>http://https://github.com/rock-multiagent/multiagent-bundle-rock_multiagent.git</url>
   <depend package="bundles/rock" />
-  <!--
-   To add any dependencies use the depend tag
-  <depend package="dummy-dependency-0" />
-	...
-  <depend package="dummy-dependency-n-1" />
-  <depend package="dummy-dependency-n" />
-  -->
   <depend package="multiagent/orogen/fipa_services" />
 </package>
