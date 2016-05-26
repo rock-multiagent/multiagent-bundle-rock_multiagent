@@ -1,1 +1,1 @@
-require 'models/actions/common'
+require 'rock_multiagent/models/actions/common'

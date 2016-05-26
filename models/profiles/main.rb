@@ -1,7 +1,7 @@
-require 'rock_multiagent/models/compositions/message_transport.rb'
+require 'rock_multiagent/models/compositions/message_transport'
 
 module RockMultiagent
     profile 'Profile' do
-        define 'message_transport_service', Compositions::MessageTransportService
+        define 'fipa_message_transport_service', Compositions::FIPAMessageTransportService
     end
 end
