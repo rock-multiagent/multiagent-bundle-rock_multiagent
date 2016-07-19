@@ -2,7 +2,7 @@
 # Complete transport addresses (IP and port) of known agents that do not support mDNS. The format is 'agentName=udt://IP:port'.
 #known_addresses: []
 # Optional list of local receivers -- triggers the creation of corresponding ports at startup of this component
-#local_receivers: []
+local_receivers: ["sensors","telemetry"]
 # This property can be used to configure supported transports, i.e. to set a fixed UDT port to listen on instead of a random one. This will fail if the port is blocked.
 transport_configurations: []
 # Optional list of transports that can be used for communication: UDT, TCP; default is UDT

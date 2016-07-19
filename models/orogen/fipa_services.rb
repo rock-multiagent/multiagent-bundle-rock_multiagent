@@ -33,12 +33,18 @@ class FipaServices::MessageTransportTask
 
     # Add dynamic ports -- this is mainly necessary to support and use the
     # modelling tools in syskit, e.g.
-    #     FipaServices::MessageTransportTask.with_local_receivers(["my-robot"])
+    #     FipaServices::MessageTransportTask.with_local_receivers("default")
     # will create a composition of type
     #     RockMultiagent::Compositions::FIPAMessageTransportService
-    # with the corresponding local receiver (output)ports
+    # with the corresponding local receiver (output)ports as configured in the
+    # 'default' section of an existing FipaServices::MessageTransportTask
+    # configuration
     #
-    def self.with_local_receivers(receiver_names = Array.new)
+    def self.with_local_receivers(*conf_names)
+        receiver_names = get_local_receivers(conf_names)
+
+        ::Robot.info "Configuration of #{self} with local receivers: #{receiver_names} -- #{__FILE__}"
+
         task = FipaServices::MessageTransportTask.specialize
         receiver_names.each do |name|
             task.require_dynamic_service 'fipa_message_out', as: name
@@ -51,5 +57,33 @@ class FipaServices::MessageTransportTask
                 provides RockMultiagent::FIPAMessageProviderSrv, as: name, 'fipa_out' => name
             end
         end
+    end
+
+    # Get the local receivers, which is a property of the
+    # FipaServices::MessageTransportTask
+    #
+    # All configured local receiver names will be prefixed with 
+    # <robot-name>-
+    # so that multiple robots have a set of individual local ports which can be
+    # identified by the prefix
+    def self.get_local_receivers(*conf_names)
+        config_file = FipaServices::MessageTransportTask.configuration_manager.existing_configuration_file
+        Orocos.conf.load_file(config_file)
+        conf = Orocos.conf.resolve("fipa_services::MessageTransportTask", *conf_names, true)
+        local_receivers = conf['local_receivers']
+
+        # Prefix all local receivers with the robot name
+        regexp = Regexp.new(Roby.app.robot_name)
+        local_receivers = local_receivers.map do |receiver_name|
+            if !regexp.match(receiver_name)
+                "#{Roby.app.robot_name}-#{receiver_name}"
+            else
+                receiver_name
+            end
+        end
+
+        # Robot name should always be available as communication channel
+        local_receivers << Roby.app.robot_name
+        local_receivers.uniq
     end
 end
