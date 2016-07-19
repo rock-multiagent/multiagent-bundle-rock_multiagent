@@ -33,19 +33,23 @@ class TelemetryProvider::Task
     # Setup a number of tasks to connect to the telemetry provider
     def setup_tasks(task_setup = Hash.new)
         task_setup.each do |name, ports|
-            setup_task(name, ports)
+            setup_task_by_name(name, ports)
+        end
+    end
+
+    def setup_task(task)
+        task.each_output_port do |p|
+            if !port_names || port_names.include?(p.name)
+                connect_telemetry_port(p.name, "#{task.name.gsub("/","")}-#{p.name}")
+            end
         end
     end
 
     # Connect a task to the telemetry provider
-    def setup_task(local_task_name, port_names = Hash.new)
+    def setup_task_by_name(task_name, port_names = Hash.new)
         begin
             local_task = Orocos.get local_task_name
-            local_task.each_output_port do |p|
-                if !port_names || port_names.include?(p.name)
-                    connect_telemetry_port(p.name, "#{local_task.name}-#{p.name}")
-                end
-            end
+            setup_task(task, port_names)
         rescue Exception => e
             ::Robot.warn "TelemetryProvider::setup_task: could not find running '#{local_task_name}' -- #{__FILE__} - #{e}"
         end
