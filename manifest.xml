@@ -7,4 +7,5 @@
   <url>http://https://github.com/rock-multiagent/multiagent-bundle-rock_multiagent.git</url>
   <depend package="bundles/rock" />
   <depend package="multiagent/orogen/fipa_services" />
+  <depend package="multiagent/orogen/telemetry_provider" optional="1" />
 </package>
