@@ -70,7 +70,7 @@ class FipaServices::MessageTransportTask
         config_file = FipaServices::MessageTransportTask.configuration_manager.existing_configuration_file
         Orocos.conf.load_file(config_file)
         conf = Orocos.conf.resolve("fipa_services::MessageTransportTask", *conf_names, true)
-        local_receivers = conf['local_receivers']
+        local_receivers = conf['local_receivers'] || []
 
         # Prefix all local receivers with the robot name
         regexp = Regexp.new(Roby.app.robot_name)
