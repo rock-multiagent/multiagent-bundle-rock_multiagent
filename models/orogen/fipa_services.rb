@@ -24,8 +24,9 @@ class FipaServices::MessageTransportTask
         each_data_service do |srv|
             if srv.fullfills?(RockMultiagent::FIPAMessageProviderSrv)
                 is_local = true
-                if !orocos_task.addReceiver(srv.name, is_local)
-                    raise RuntimeError, "FipaServices::MessageTransportTask: Failed to add a receiver name #{srv.name}"
+                if !orocos_task.has_port?(srv.name) && !orocos_task.addReceiver(srv.name, is_local)
+                    ::Robot.warn "FipaServices::MessageTransportTask: Failed to add receiver port '#{srv.name}'"
+                    return false
                 end
             end
         end
