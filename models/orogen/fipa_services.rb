@@ -21,13 +21,14 @@ class FipaServices::MessageTransportTask
 
     def configure
         super
+        ::Robot.info "FipaService::MessageTransportTask::configure waiting 5s for propagation of removed services in Avahi ..."
+        sleep 5
+        ::Robot.info "FipaService::MessageTransportTask::configure completed"
         each_data_service do |srv|
             if srv.fullfills?(RockMultiagent::FIPAMessageProviderSrv)
-                is_local = true
-                if !orocos_task.has_port?(srv.name) && !orocos_task.addReceiver(srv.name, is_local)
-                    ::Robot.warn "FipaServices::MessageTransportTask: Failed to add receiver port '#{srv.name}'"
-                    return false
-                end
+                local_receivers = orocos_task.local_receivers
+                local_receivers << srv.name
+                orocos_task.local_receivers = local_receivers
             end
         end
     end
@@ -37,15 +38,19 @@ class FipaServices::MessageTransportTask
     #     FipaServices::MessageTransportTask.with_local_receivers("default")
     # will create a composition of type
     #     RockMultiagent::Compositions::FIPAMessageTransportService
-    # with the corresponding local receiver (output)ports as configured in the
-    # 'default' section of an existing FipaServices::MessageTransportTask
-    # configuration
     #
-    def self.with_local_receivers(*conf_names)
-        receiver_names = get_local_receivers(conf_names)
+    # Adds local receivers port for the constructed names from <robot-name>-<suffix>
+    # for the list of receiver suffixes, e.g. .with_local_receivers("sensors","telemetry")
+    # will create (together with 'syskit run --robot=myrobotname,myrobottype"')
+    # the ports myrobotname-sensors and myrobotname-telemetry
+    #
+    # If running multiple robots in the same network this fulfills the requirement of 
+    # unique naming, which the service registration (Avahi) requires
+    #
+    def self.with_local_receivers(*receiver_suffixes)
+        receiver_names = globally_unique_receivers(receiver_suffixes)
 
-        ::Robot.info "Configuration of #{self} with local receivers: #{receiver_names} -- #{__FILE__}"
-
+        ::Robot.info "Configuration of #{self} with (globally unique) receivers: #{receiver_names} -- #{__FILE__}"
         task = FipaServices::MessageTransportTask.specialize
         receiver_names.each do |name|
             task.require_dynamic_service 'fipa_message_out', as: name
@@ -67,15 +72,10 @@ class FipaServices::MessageTransportTask
     # <robot-name>-
     # so that multiple robots have a set of individual local ports which can be
     # identified by the prefix
-    def self.get_local_receivers(*conf_names)
-        config_file = FipaServices::MessageTransportTask.configuration_manager.existing_configuration_file
-        Orocos.conf.load_file(config_file)
-        conf = Orocos.conf.resolve("fipa_services::MessageTransportTask", *conf_names, true)
-        local_receivers = conf['local_receivers'] || []
-
+    def self.globally_unique_receivers(local_receivers)
         # Prefix all local receivers with the robot name
         regexp = Regexp.new(Roby.app.robot_name)
-        local_receivers = local_receivers.map do |receiver_name|
+        global_receivers = local_receivers.map do |receiver_name|
             if !regexp.match(receiver_name)
                 "#{Roby.app.robot_name}-#{receiver_name}"
             else
@@ -84,7 +84,7 @@ class FipaServices::MessageTransportTask
         end
 
         # Robot name should always be available as communication channel
-        local_receivers << Roby.app.robot_name
-        local_receivers.uniq
+        global_receivers << Roby.app.robot_name
+        global_receivers.uniq
     end
 end
