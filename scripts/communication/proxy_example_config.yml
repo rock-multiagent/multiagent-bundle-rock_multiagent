@@ -1,0 +1,9 @@
+---
+- task: mapper
+  ports: 
+    - envire_map
+  period: 0.1
+- task: camera_usb_deployment
+  ports:
+      # - frame
+  period: 0.1

@@ -1,0 +1,5 @@
+---
+- task: camera_usb_deployment
+  ports:
+      # - frame
+  period: 0.1

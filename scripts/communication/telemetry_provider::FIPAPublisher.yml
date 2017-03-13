@@ -1,0 +1,11 @@
+--- name:default
+# Set conversation prefix -- current timestamp will be appended
+conversation_prefix: fipa_publisher-
+# Set language of the content for outgoing FIPA messages
+language: typelib-marshalled
+# Set the protocol field for outgoing FIPA messages
+protocol: distributed-data
+# Set the receivers name or regex (mandatory)
+receiver: 'display-proxy-client'
+# Set the sender name (mandatory)
+sender: 'display-proxy-server'
