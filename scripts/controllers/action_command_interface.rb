@@ -49,8 +49,8 @@ module RockMultiagent
         def handle_letter(letter)
             @robot.info "Handling received message" if @robot
             msg = letter.getACLMessage
-            @robot.info "Protocol: #{msg.getProtocol}, language #{msg.getLanguage}" if @robot
-            if msg.getProtocol == 'request'
+            @robot.info "protocol: '#{msg.getProtocol}', language '#{msg.getLanguage}', content '#{msg.getContent}'" if @robot
+            if msg.getPerformative == :request
                 if msg.getLanguage == 'syskit'
                     @robot.info "handle syskit request: #{msg.getContent}" if @robot
                     execute_action_request msg.getContent
