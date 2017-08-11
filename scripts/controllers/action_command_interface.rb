@@ -39,6 +39,7 @@ module RockMultiagent
             msg.setProtocol 'request'
             msg.setContent "ACTION #{action_name} EXEC #{arguments.to_yaml}"
 
+            @robot.info "Request action: #{receiver} action: #{action_name} #{arguments}" if @robot
             letter = FIPA::ACLEnvelope.new
             letter.insert(msg, FIPARepresentation::BITEFFICIENT)
 
