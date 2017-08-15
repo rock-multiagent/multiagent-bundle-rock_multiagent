@@ -20,7 +20,8 @@ module RockMultiagent
             describe("Device control action in order to start/stop a specific device and connect it to the telemetry provider, so that sensor data can be forwarded to external systems").
                 required_arg("name", "Device name").
                 optional_arg("type", "Device type - to determine which port to use").
-                optional_arg("control", "One of :start or :stop - default is start")
+                optional_arg("control", "One of :start or :stop - default is start").
+                returns(RockMultiagent::Tasks::DeviceControl)
             def device_control(arguments = Hash.new)
                 device_control = DeviceControl.new arguments
                 provider = device_control.depends_on(TelemetryProvider::Task, :role => 'telemetry_provider')
@@ -29,21 +30,24 @@ module RockMultiagent
             end
 
             describe("Add a requirements for a specific device from an external entity").
-                required_arg("device_name","Device that is required by an external entity")
+                required_arg("device_name","Device that is required by an external entity").
+                returns(RockMultiagent::Tasks::AddExternalDependency)
             def add_device_requirement(arguments = Hash.new)
                 AddExternalDependency.new arguments
             end
 
             describe("Remove a device requirement from an external entity").
-                required_arg("device_name", "Device that is not required any more by the external entity")
+                required_arg("device_name", "Device that is not required any more by the external entity").
+                returns(RockMultiagent::Tasks::RemoveExternalDependency)
             def remove_device_requirement(arguments = Hash.new)
                 RemoveExternalDependency.new arguments
             end
 
             describe("Idle command to run a command for a certain time frame").
-                optional_arg("duration", "time in s this task should run for")
+                optional_arg("duration", "time in s this task should run for").
+                returns(RockMultiagent::Tasks::Idle)
             def idle(arguments = Hash.new)
-                task = Idle.new arguments
+                task = RockMultiagent::Tasks::Idle.new arguments
                 task
             end
 
