@@ -47,6 +47,19 @@ module RockMultiagent
                 task
             end
 
+            describe("Probe command to test connection").
+                optional_arg("first_arg", "First argument (for testing only)").
+                optional_arg("second_arg", "Second argument (for testing only)").
+                returns(RockMultiagent::Tasks::Probe)
+            def probe(arguments = Hash.new)
+                probe = RockMultiagent::Tasks::Probe.new arguments
+                cmp_probe = probe.depends_on(RockMultiagent::Compositions::Probe, :role => 'probe_composition')
+                probe.should_start_after probe.probe_composition_child.start_event
+                probe.probing_event.forward_to probe.probe_composition_child.probing_event
+                probe.probe_composition_child.probing_success_event.forward_to probe.success_event
+                probe
+            end
+
         end
     end
 end
