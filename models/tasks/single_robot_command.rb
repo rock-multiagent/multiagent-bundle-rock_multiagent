@@ -16,7 +16,7 @@ module RockMultiagent
 
                 begin
                     mts = Orocos::TaskContext.get_provides "fipa_services::MessageTransportTask"
-                    @action_cmd = RockMultiagent::ActionCommandInterface.new(Robot, Roby.app.robot_name, mts)
+                    @action_cmd = RockMultiagent::ActionCommandInterface.get_instance(Robot, Roby.app.robot_name, mts)
                 rescue Orocos::NotFound => e
                     Robot.warn "RockMultiagent::Tasks::ActionCommand: failed to initialize the action command interface: #{e}"
                     emit :failed
@@ -26,7 +26,13 @@ module RockMultiagent
 
             on :start do |event|
                 begin
-                    action_cmd.request_action(receiver, action_name,argument_hash)
+                    action_cmd.request_action(receiver, action_name, argument_hash) do |initial_request, inform, status|
+                        if status == "failed"
+                            emit :failed
+                        elsif status == "success"
+                            emit :success
+                        end
+                    end
                 rescue Exception => e
                     Robot.warn "RockMultiagent::Tasks::ActionCommand: failed to request action: #{e}"
                     emit :failed

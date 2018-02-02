@@ -12,7 +12,7 @@ begin
                 Robot.info "RockMultiagent::Controller: found #{mts.name}"
                 if mts
                     Robot.info "RockMultiagent::Controller: setting action_cmd interface"
-                    $action_cmd = RockMultiagent::ActionCommandInterface.new(Robot, Roby.app.robot_name, mts)
+                    $action_cmd = RockMultiagent::ActionCommandInterface.get_instance(Robot, Roby.app.robot_name, mts, Roby.app)
                 end
             rescue Orocos::NotFound => e
                 Robot.info "RockMultiagent::Controller: could not create ActionCommandInterface: #{e}"
